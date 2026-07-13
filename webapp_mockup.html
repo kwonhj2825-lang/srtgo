@@ -6,20 +6,20 @@
 <title>SRT 표 사냥 🎯</title>
 <style>
   :root{
-    --srt:#5b1f7a; --srt-2:#7b2b90; --magenta:#b3187f;
-    --srt-grad:linear-gradient(120deg,#4a1470 0%,#7a2593 55%,#b3187f 120%);
-    --ink:#2c2340; --muted:#9a90ab; --line:#efeaf4; --soft:#f7f3fb;
-    --card:#ffffff; --bg:#f2edf7; --ok:#12b886; --star:#ffb400;
+    --srt:#1c1c1e; --srt-2:#3a3a3c; --magenta:#1c1c1e;
+    --srt-grad:linear-gradient(120deg,#3a3a3c 0%,#1c1c1e 55%,#000 120%);
+    --ink:#18181b; --muted:#8e8e93; --line:#ececec; --soft:#f6f6f7;
+    --card:#ffffff; --bg:#f3f3f4; --ok:#12b886; --star:#ffb400; --danger:#e5484d;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-  body{margin:0; font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; color:var(--ink); background:linear-gradient(170deg,#f4ecfb 0%,#fdeef6 55%,#eef4ff 100%); background-attachment:fixed}
+  body{margin:0; font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; color:var(--ink); background:linear-gradient(170deg,#f6f6f7 0%,#f1f1f2 55%,#ededee 100%); background-attachment:fixed}
   .phone{max-width:430px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:100px}
 
   /* 몽글몽글 소프트 터치 */
-  .card, .rows, .optrow, .status, details{ border-radius:26px; box-shadow:0 16px 36px rgba(123,43,144,.12) }
+  .card, .rows, .optrow, .status, details{ border-radius:26px; box-shadow:0 16px 36px rgba(0,0,0,.12) }
   .swapcard{ border-radius:26px }
   .seat, .chip, .field input, input[type=date], .tsel select, .search, .todaybtn{ border-radius:16px }
-  .cta{ box-shadow:0 16px 32px rgba(123,43,144,.26) }
+  .cta{ box-shadow:0 16px 32px rgba(0,0,0,.26) }
   .row-head .ic{ border-radius:16px }
 
 
@@ -29,35 +29,35 @@
   .appbar h1 .logo{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); padding:2px 9px; border-radius:8px; font-size:14px; font-weight:900; letter-spacing:1px}
   .appbar .sub{font-size:12px; opacity:.85; margin-top:4px}
 
-  .card{background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(91,31,122,.14); margin:0 16px}
+  .card{background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,.14); margin:0 16px}
   .swapcard{margin-top:-14px; padding:8px 6px; display:flex; align-items:center}
   .st{flex:1; padding:30px 18px; cursor:pointer; border-radius:18px; transition:.12s}
   .st:active{background:var(--soft)}
   .st .k{font-size:12px; color:var(--muted); font-weight:700; margin-bottom:5px}
   .st .v{font-size:26px; font-weight:900; letter-spacing:-.8px; line-height:1}
   .st.arrival{text-align:right}
-  .swapbtn{width:46px;height:46px;border-radius:50%;border:none;background:var(--srt);color:#fff;font-size:20px;cursor:pointer;flex:0 0 auto;box-shadow:0 6px 16px rgba(91,31,122,.4)}
+  .swapbtn{width:46px;height:46px;border-radius:50%;border:none;background:var(--srt);color:#fff;font-size:20px;cursor:pointer;flex:0 0 auto;box-shadow:0 6px 16px rgba(0,0,0,.4)}
   .swapbtn:active{transform:rotate(180deg)}
 
   /* 즐겨찾기 */
   .favs{margin:12px 16px 0}
   .favs .favbar{display:flex; gap:8px; overflow-x:auto; padding:2px 0 4px; scrollbar-width:none}
   .favs .favbar::-webkit-scrollbar{display:none}
-  .fav{flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:10px 12px 10px 14px; background:#fff; border:2px solid var(--line); border-radius:14px; cursor:pointer; font-weight:800; font-size:13.5px; box-shadow:0 4px 14px rgba(91,31,122,.06)}
+  .fav{flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:10px 12px 10px 14px; background:#fff; border:2px solid var(--line); border-radius:14px; cursor:pointer; font-weight:800; font-size:13.5px; box-shadow:0 4px 14px rgba(0,0,0,.06)}
   .fav .rt{color:var(--ink)} .fav .rt .a{color:var(--magenta); margin:0 4px}
-  .fav .del{color:#cbbfd8; font-weight:900; font-size:15px; line-height:1}
-  .fav .del:hover{color:var(--magenta)}
-  .fav.add{color:var(--srt); border-style:dashed; border-color:#d9c9e6}
+  .fav .del{color:#c7c7cc; font-weight:900; font-size:15px; line-height:1}
+  .fav .del:hover{color:var(--danger)}
+  .fav.add{color:var(--srt); border-style:dashed; border-color:#d1d1d6}
   .fav.add.saved{color:var(--star); border-color:#ffe0a0; background:#fffaf0}
 
-  .rows{margin:14px 16px 0; background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(91,31,122,.1); overflow:hidden}
+  .rows{margin:14px 16px 0; background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,.1); overflow:hidden}
   .row + .row{border-top:1.5px solid var(--soft)}
   .row-head{display:flex; align-items:center; gap:14px; padding:17px 18px; cursor:pointer}
   .row-head .ic{width:40px;height:40px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-size:19px;flex:0 0 auto}
   .row-head .k{font-size:12px;color:var(--muted);font-weight:700;flex:0 0 auto;min-width:64px}
   .row-head .v{flex:1;text-align:right;font-size:16px;font-weight:800;letter-spacing:-.3px}
   .row-head .v .sep{color:var(--magenta);margin:0 5px}
-  .row-head .chev{color:#cfc4db;font-size:13px;transition:.25s;flex:0 0 auto}
+  .row-head .chev{color:#c7c7cc;font-size:13px;transition:.25s;flex:0 0 auto}
   .row.open .chev{transform:rotate(180deg)}
   .row-body{max-height:0;overflow:hidden;transition:max-height .28s ease;background:var(--soft)}
   .row-inner{padding:10px 18px 20px}
@@ -82,7 +82,7 @@
   .ob-num{flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--srt); color:#fff; display:grid; place-items:center; font-weight:900}
   .ob-body{flex:1; min-width:0}
   .ob-title{font-weight:900; font-size:16px; margin-bottom:2px}
-  .ob-howto{margin:2px 0 12px; padding-left:18px; font-size:13px; color:#6a5d7d; line-height:1.9; font-weight:600}
+  .ob-howto{margin:2px 0 12px; padding-left:18px; font-size:13px; color:#636366; line-height:1.9; font-weight:600}
   .ob-howto b{color:var(--srt)}
   .gear{cursor:pointer}
 
@@ -97,7 +97,7 @@
     font-size:19px; font-weight:900; color:var(--srt); outline:none; background:#fff; cursor:pointer; text-align:center;
   }
   .tsel select:focus{border-color:var(--srt-2)}
-  .tsel::after{content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#c3b4d3; font-size:13px; pointer-events:none}
+  .tsel::after{content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#c7c7cc; font-size:13px; pointer-events:none}
   .tunit{flex:0 0 auto; font-size:14px; font-weight:800; color:var(--muted); margin-left:-4px}
   .timehint{font-size:11.5px; color:var(--muted); font-weight:600; text-align:center; margin-top:4px}
 
@@ -105,7 +105,7 @@
   .seat{padding:16px 12px;border-radius:16px;background:#fff;border:2px solid var(--line);cursor:pointer;text-align:center;transition:.12s}
   .seat .t{font-weight:900;font-size:15px}
   .seat .s{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px}
-  .seat.on{border-color:var(--magenta);background:#fdf2f9}
+  .seat.on{border-color:var(--magenta);background:#f3f3f4}
   .seat.on .t{color:var(--magenta)}
 
   .datewrap{display:flex; gap:10px; align-items:stretch}
@@ -124,18 +124,18 @@
   .stp button:active{transform:scale(.9)}
   .stp .val{min-width:18px;text-align:center;font-weight:900;font-size:17px}
 
-  .optrow{margin:14px 16px 0;background:var(--card);border-radius:20px;box-shadow:0 10px 30px rgba(91,31,122,.1);padding:6px 18px}
+  .optrow{margin:14px 16px 0;background:var(--card);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);padding:6px 18px}
   .sw{display:flex;align-items:center;justify-content:space-between;padding:15px 0}
   .sw .nm{font-size:14.5px;font-weight:800}
   .sw .nm small{display:block;color:var(--muted);font-weight:600;font-size:11px;margin-top:1px}
   .switch{position:relative;width:52px;height:30px;flex:0 0 auto}
   .switch input{display:none}
-  .slider{position:absolute;inset:0;background:#e0d7ea;border-radius:999px;transition:.2s;cursor:pointer}
+  .slider{position:absolute;inset:0;background:#d9d9de;border-radius:999px;transition:.2s;cursor:pointer}
   .slider:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.15)}
   .switch input:checked + .slider{background:var(--srt)}
   .switch input:checked + .slider:before{transform:translateX(22px)}
 
-  details{margin:12px 16px 0;background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(91,31,122,.08);overflow:hidden}
+  details{margin:12px 16px 0;background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);overflow:hidden}
   summary{padding:16px 18px;cursor:pointer;font-weight:800;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
   summary::-webkit-details-marker{display:none}
   details .body{padding:0 18px 18px}
@@ -145,14 +145,14 @@
   .field input:focus{border-color:var(--srt-2)}
   .hint{font-size:11.5px;color:var(--muted);line-height:1.5;font-weight:600}
 
-  .status{margin:14px 16px 0;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(91,31,122,.08);padding:15px 18px;font-size:12.5px;color:#7a6f8c;line-height:1.7;font-weight:600}
+  .status{margin:14px 16px 0;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:15px 18px;font-size:12.5px;color:#636366;line-height:1.7;font-weight:600}
   .status .ok{color:var(--ok);font-weight:800}
-  .status .hi{color:var(--magenta);font-weight:800}
+  .status .hi{color:var(--danger);font-weight:800}
 
-  .cta-wrap{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;padding:12px 16px 18px;background:linear-gradient(to top,#fbf4fa 72%,transparent);z-index:7}
-  .cta{width:100%;padding:18px;border:none;border-radius:18px;font-size:17px;font-weight:900;color:#fff;cursor:pointer;background:var(--srt-grad);box-shadow:0 10px 26px rgba(91,31,122,.4);letter-spacing:-.3px}
+  .cta-wrap{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;padding:12px 16px 18px;background:linear-gradient(to top,#f6f6f7 72%,transparent);z-index:7}
+  .cta{width:100%;padding:18px;border:none;border-radius:18px;font-size:17px;font-weight:900;color:#fff;cursor:pointer;background:var(--srt-grad);box-shadow:0 10px 26px rgba(0,0,0,.4);letter-spacing:-.3px}
   .cta:active{transform:translateY(2px)}
-  .foot{text-align:center;margin:18px 16px 0;font-size:11px;color:#a99cb8;font-weight:600}
+  .foot{text-align:center;margin:18px 16px 0;font-size:11px;color:#a1a1a6;font-weight:600}
 </style>
 </head>
 <body>
@@ -561,7 +561,7 @@ async function refreshStatus(){
     isRunning = s.running;
     const cta = document.getElementById("cta");
     cta.textContent = s.running ? "■ 사냥 그만두기" : "🐾 표 사냥 시작";
-    cta.style.background = s.running ? "linear-gradient(120deg,#a99bb8,#7a6f8c)" : "";
+    cta.style.background = s.running ? "linear-gradient(120deg,#a1a1a6,#636366)" : "";
 
     const h=String(Math.floor(s.elapsed/3600)).padStart(2,"0");
     const m=String(Math.floor(s.elapsed%3600/60)).padStart(2,"0");
@@ -593,7 +593,7 @@ async function refreshStatus(){
       setStatus(`<span class="hi">🔌 서버(컴퓨터) 연결 끊김</span><br>컴퓨터가 꺼졌거나 인터넷이 끊겼을 수 있어요. Tailscale이 켜져 있는지, 컴퓨터가 켜져 있는지 확인하세요.`);
       const cta=document.getElementById("cta");
       cta.textContent="🔌 서버 연결 안 됨";
-      cta.style.background="linear-gradient(120deg,#b3187f,#7a2593)";
+      cta.style.background="linear-gradient(120deg,#e5484d,#b3181f)";
     }
   }
 }
@@ -636,12 +636,12 @@ function closeOnboard(){ document.getElementById("onboard").classList.remove("sh
 function _v(id){ const e=document.getElementById(id); return (e && e.value.trim()) ? e.value.trim() : null; }
 async function saveOnboard(){
   const msg=document.getElementById("ob-msg");
-  if(!SERVED){ msg.style.color="#b3187f"; msg.textContent="⚠️ 서버(http://…:8000)로 접속해야 저장돼요."; return; }
+  if(!SERVED){ msg.style.color="#e5484d"; msg.textContent="⚠️ 서버(http://…:8000)로 접속해야 저장돼요."; return; }
   const b={ srt_id:_v("ob-srtId"), srt_pass:_v("ob-srtPass"), tg_token:_v("ob-tgToken"), tg_chat_id:_v("ob-tgChat") };
   const st = await (await fetch("/api/config/status")).json();
   const needSrt = !st.srt && (!b.srt_id || !b.srt_pass);
   const needTg  = !st.telegram && (!b.tg_token || !b.tg_chat_id);
-  if(needSrt || needTg){ msg.style.color="#b3187f"; msg.textContent="⚠️ SRT 계정과 텔레그램 정보를 모두 입력해주세요."; return; }
+  if(needSrt || needTg){ msg.style.color="#e5484d"; msg.textContent="⚠️ SRT 계정과 텔레그램 정보를 모두 입력해주세요."; return; }
   msg.style.color="#12b886"; msg.textContent="저장 중...";
   await fetch("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});
   await loadConfigStatus();
@@ -653,7 +653,7 @@ function updateFooter(){
   const f=document.getElementById("foot");
   if(!f) return;
   if(SERVED){
-    f.innerHTML='🔴 <b style="color:#b3187f">실제로 표를 잡습니다.</b> [표 사냥 시작]을 누르면 조건에 맞는 표를 실제로 예매해요.';
+    f.innerHTML='🔴 <b style="color:#e5484d">실제로 표를 잡습니다.</b> [표 사냥 시작]을 누르면 조건에 맞는 표를 실제로 예매해요.';
   }else{
     f.textContent='※ 지금은 파일로 연 미리보기예요. 실제 표 사냥은 서버(http://…:8000)로 접속해야 됩니다.';
   }
@@ -666,15 +666,15 @@ async function loadConfigStatus(){
     const tg=document.getElementById("tgStatus"), sr=document.getElementById("srtStatus");
     if(tg) tg.textContent = c.telegram ? "저장됨 ✅" : "미설정";
     if(sr) sr.textContent = c.srt ? "저장됨 ✅" : "미설정";
-    if(tg && !c.telegram) tg.style.color="#b3187f";
-    if(sr && !c.srt) sr.style.color="#b3187f";
+    if(tg && !c.telegram) tg.style.color="#e5484d";
+    if(sr && !c.srt) sr.style.color="#e5484d";
     // 저장돼 있으면 입력칸에 안내 placeholder
     if(c.telegram){ const a=document.getElementById("tgToken"),b=document.getElementById("tgChat");
       if(a)a.placeholder="저장됨 (바꿀 때만 입력)"; if(b)b.placeholder="저장됨 (바꿀 때만 입력)"; }
     if(c.srt){ const a=document.getElementById("srtId"),b=document.getElementById("srtPass");
       if(a)a.placeholder="저장됨 (바꿀 때만 입력)"; if(b)b.placeholder="저장됨 (바꿀 때만 입력)"; }
     const cs=document.getElementById("cardStatus");
-    if(cs){ cs.textContent = c.card ? "저장됨 ✅" : "미설정"; if(!c.card) cs.style.color="#b3187f"; }
+    if(cs){ cs.textContent = c.card ? "저장됨 ✅" : "미설정"; if(!c.card) cs.style.color="#e5484d"; }
     if(c.card){ ["cardNum","cardExpire","cardPw","cardBirth"].forEach(id=>{ const e=document.getElementById(id); if(e) e.placeholder="저장됨 (바꿀 때만 입력)"; }); }
     // 처음 쓰는 사람(계정·텔레그램 미설정)이면 첫 설정 화면 자동 표시
     if(!c.srt || !c.telegram){ openOnboard(); }
