@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "srtgo"
+authors = [
+    {name = "DKim", email = "lapis42@gmail.com"},
+]
+description = "SRTgo: K-Train Reservation Helper"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT License"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "click",
+    "curl_cffi",
+    "requests",
+    "inquirer>=3.4",
+    "keyring",
+    "PyCryptodome",
+    "prompt_toolkit>=3",
+    "python-telegram-bot",
+    "termcolor"
+]
+dynamic = ["version"]
+[tool.setuptools_scm]
+
+[project.urls]
+Homepage = "https://github.com/lapis42/srtgo"
+
+[project.scripts]
+srtgo = "srtgo.srtgo:srtgo"

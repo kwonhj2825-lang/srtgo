@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>SRT 표 사냥 🎯</title>
+<style>
+  :root{
+    --srt:#5b1f7a; --srt-2:#7b2b90; --magenta:#b3187f;
+    --srt-grad:linear-gradient(120deg,#4a1470 0%,#7a2593 55%,#b3187f 120%);
+    --ink:#2c2340; --muted:#9a90ab; --line:#efeaf4; --soft:#f7f3fb;
+    --card:#ffffff; --bg:#f2edf7; --ok:#12b886; --star:#ffb400;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  body{margin:0; font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; color:var(--ink); background:linear-gradient(170deg,#f4ecfb 0%,#fdeef6 55%,#eef4ff 100%); background-attachment:fixed}
+  .phone{max-width:430px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:100px}
+
+  /* 몽글몽글 소프트 터치 */
+  .card, .rows, .optrow, .status, details{ border-radius:26px; box-shadow:0 16px 36px rgba(123,43,144,.12) }
+  .swapcard{ border-radius:26px }
+  .seat, .chip, .field input, input[type=date], .tsel select, .search, .todaybtn{ border-radius:16px }
+  .cta{ box-shadow:0 16px 32px rgba(123,43,144,.26) }
+  .row-head .ic{ border-radius:16px }
+
+
+  .appbar{background:var(--srt-grad); color:#fff; padding:8px 18px 14px; position:relative; overflow:hidden; border-radius:0 0 24px 24px}
+  .appbar .top{display:flex; align-items:center; justify-content:space-between; font-size:13px; opacity:.9; margin-bottom:8px}
+  .appbar h1{margin:0; font-size:19px; font-weight:800; letter-spacing:-.4px; display:flex; align-items:center; gap:8px}
+  .appbar h1 .logo{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); padding:2px 9px; border-radius:8px; font-size:14px; font-weight:900; letter-spacing:1px}
+  .appbar .sub{font-size:12px; opacity:.85; margin-top:4px}
+
+  .card{background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(91,31,122,.14); margin:0 16px}
+  .swapcard{margin-top:-14px; padding:8px 6px; display:flex; align-items:center}
+  .st{flex:1; padding:30px 18px; cursor:pointer; border-radius:18px; transition:.12s}
+  .st:active{background:var(--soft)}
+  .st .k{font-size:12px; color:var(--muted); font-weight:700; margin-bottom:5px}
+  .st .v{font-size:26px; font-weight:900; letter-spacing:-.8px; line-height:1}
+  .st.arrival{text-align:right}
+  .swapbtn{width:46px;height:46px;border-radius:50%;border:none;background:var(--srt);color:#fff;font-size:20px;cursor:pointer;flex:0 0 auto;box-shadow:0 6px 16px rgba(91,31,122,.4)}
+  .swapbtn:active{transform:rotate(180deg)}
+
+  /* 즐겨찾기 */
+  .favs{margin:12px 16px 0}
+  .favs .favbar{display:flex; gap:8px; overflow-x:auto; padding:2px 0 4px; scrollbar-width:none}
+  .favs .favbar::-webkit-scrollbar{display:none}
+  .fav{flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:10px 12px 10px 14px; background:#fff; border:2px solid var(--line); border-radius:14px; cursor:pointer; font-weight:800; font-size:13.5px; box-shadow:0 4px 14px rgba(91,31,122,.06)}
+  .fav .rt{color:var(--ink)} .fav .rt .a{color:var(--magenta); margin:0 4px}
+  .fav .del{color:#cbbfd8; font-weight:900; font-size:15px; line-height:1}
+  .fav .del:hover{color:var(--magenta)}
+  .fav.add{color:var(--srt); border-style:dashed; border-color:#d9c9e6}
+  .fav.add.saved{color:var(--star); border-color:#ffe0a0; background:#fffaf0}
+
+  .rows{margin:14px 16px 0; background:var(--card); border-radius:22px; box-shadow:0 10px 30px rgba(91,31,122,.1); overflow:hidden}
+  .row + .row{border-top:1.5px solid var(--soft)}
+  .row-head{display:flex; align-items:center; gap:14px; padding:17px 18px; cursor:pointer}
+  .row-head .ic{width:40px;height:40px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-size:19px;flex:0 0 auto}
+  .row-head .k{font-size:12px;color:var(--muted);font-weight:700;flex:0 0 auto;min-width:64px}
+  .row-head .v{flex:1;text-align:right;font-size:16px;font-weight:800;letter-spacing:-.3px}
+  .row-head .v .sep{color:var(--magenta);margin:0 5px}
+  .row-head .chev{color:#cfc4db;font-size:13px;transition:.25s;flex:0 0 auto}
+  .row.open .chev{transform:rotate(180deg)}
+  .row-body{max-height:0;overflow:hidden;transition:max-height .28s ease;background:var(--soft)}
+  .row-inner{padding:10px 18px 20px}
+
+  .sheet{position:fixed;inset:0;background:#fff;z-index:50;display:none;flex-direction:column;max-width:430px;margin:0 auto}
+  .sheet.show{display:flex}
+  .sheet-bar{background:var(--srt-grad);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px;font-size:17px;font-weight:800}
+  .sheet-bar .close{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1}
+  .sheet-search{padding:14px 18px}
+  .sheet-search input{width:100%;padding:14px 16px;border:2px solid var(--line);border-radius:14px;font-size:15px;font-weight:600;outline:none}
+  .sheet-search input:focus{border-color:var(--srt-2)}
+  .stationlist{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 10px 20px}
+  .stationlist .s{padding:16px 14px;font-size:16px;font-weight:700;border-radius:12px;cursor:pointer;border-bottom:1.5px solid var(--soft)}
+  .stationlist .s:active{background:var(--soft)}
+  .stationlist .s.cur{color:var(--magenta)}
+
+  /* 온보딩(첫 설정) */
+  .ob-scroll{flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:18px}
+  .ob-hero{text-align:center; padding:8px 6px 16px}
+  .ob-hero h2{font-size:19px; margin:8px 0 6px}
+  .ob-step{display:flex; gap:12px; background:var(--soft); border-radius:16px; padding:16px; margin-bottom:14px}
+  .ob-num{flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--srt); color:#fff; display:grid; place-items:center; font-weight:900}
+  .ob-body{flex:1; min-width:0}
+  .ob-title{font-weight:900; font-size:16px; margin-bottom:2px}
+  .ob-howto{margin:2px 0 12px; padding-left:18px; font-size:13px; color:#6a5d7d; line-height:1.9; font-weight:600}
+  .ob-howto b{color:var(--srt)}
+  .gear{cursor:pointer}
+
+  /* 시간대 1분 단위 */
+  .timebox{display:flex; flex-direction:column; gap:12px}
+  .trow{display:flex; align-items:center; gap:10px}
+  .trow .lab{flex:0 0 74px; font-size:12.5px; font-weight:800; color:var(--muted)}
+  .tsel{position:relative; flex:1}
+  .tsel select{
+    -webkit-appearance:none; appearance:none; width:100%;
+    padding:14px 34px 14px 16px; border:2px solid var(--line); border-radius:14px;
+    font-size:19px; font-weight:900; color:var(--srt); outline:none; background:#fff; cursor:pointer; text-align:center;
+  }
+  .tsel select:focus{border-color:var(--srt-2)}
+  .tsel::after{content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#c3b4d3; font-size:13px; pointer-events:none}
+  .tunit{flex:0 0 auto; font-size:14px; font-weight:800; color:var(--muted); margin-left:-4px}
+  .timehint{font-size:11.5px; color:var(--muted); font-weight:600; text-align:center; margin-top:4px}
+
+  .seatgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .seat{padding:16px 12px;border-radius:16px;background:#fff;border:2px solid var(--line);cursor:pointer;text-align:center;transition:.12s}
+  .seat .t{font-weight:900;font-size:15px}
+  .seat .s{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px}
+  .seat.on{border-color:var(--magenta);background:#fdf2f9}
+  .seat.on .t{color:var(--magenta)}
+
+  .datewrap{display:flex; gap:10px; align-items:stretch}
+  input[type=date]{flex:1; width:100%; max-width:100%; min-width:0; box-sizing:border-box; padding:15px; border:2px solid var(--line); border-radius:14px; font-size:16px; font-weight:800; color:var(--ink); outline:none; background:#fff; -webkit-appearance:none; appearance:none}
+  input[type=date]:focus{border-color:var(--srt-2)}
+  input[type=date]::-webkit-calendar-picker-indicator{margin:0; cursor:pointer}
+  .todaybtn{flex:0 0 auto; padding:0 16px; border:2px solid var(--srt); border-radius:14px; background:#fff; color:var(--srt); font-weight:900; font-size:14px; cursor:pointer}
+  .todaybtn:active{background:var(--soft)}
+
+  .psg{display:flex;align-items:center;justify-content:space-between;padding:13px 4px}
+  .psg + .psg{border-top:1.5px solid var(--line)}
+  .psg .nm{font-size:15px;font-weight:800}
+  .psg .nm small{display:block;color:var(--muted);font-weight:600;font-size:11px;margin-top:1px}
+  .stp{display:flex;align-items:center;gap:16px}
+  .stp button{width:38px;height:38px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--srt);font-size:20px;font-weight:900;cursor:pointer;line-height:1}
+  .stp button:active{transform:scale(.9)}
+  .stp .val{min-width:18px;text-align:center;font-weight:900;font-size:17px}
+
+  .optrow{margin:14px 16px 0;background:var(--card);border-radius:20px;box-shadow:0 10px 30px rgba(91,31,122,.1);padding:6px 18px}
+  .sw{display:flex;align-items:center;justify-content:space-between;padding:15px 0}
+  .sw .nm{font-size:14.5px;font-weight:800}
+  .sw .nm small{display:block;color:var(--muted);font-weight:600;font-size:11px;margin-top:1px}
+  .switch{position:relative;width:52px;height:30px;flex:0 0 auto}
+  .switch input{display:none}
+  .slider{position:absolute;inset:0;background:#e0d7ea;border-radius:999px;transition:.2s;cursor:pointer}
+  .slider:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.15)}
+  .switch input:checked + .slider{background:var(--srt)}
+  .switch input:checked + .slider:before{transform:translateX(22px)}
+
+  details{margin:12px 16px 0;background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(91,31,122,.08);overflow:hidden}
+  summary{padding:16px 18px;cursor:pointer;font-weight:800;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  details .body{padding:0 18px 18px}
+  .field{margin-bottom:12px}
+  .field .lb{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px}
+  .field input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:14px;font-weight:600;outline:none}
+  .field input:focus{border-color:var(--srt-2)}
+  .hint{font-size:11.5px;color:var(--muted);line-height:1.5;font-weight:600}
+
+  .status{margin:14px 16px 0;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(91,31,122,.08);padding:15px 18px;font-size:12.5px;color:#7a6f8c;line-height:1.7;font-weight:600}
+  .status .ok{color:var(--ok);font-weight:800}
+  .status .hi{color:var(--magenta);font-weight:800}
+
+  .cta-wrap{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;padding:12px 16px 18px;background:linear-gradient(to top,#fbf4fa 72%,transparent);z-index:7}
+  .cta{width:100%;padding:18px;border:none;border-radius:18px;font-size:17px;font-weight:900;color:#fff;cursor:pointer;background:var(--srt-grad);box-shadow:0 10px 26px rgba(91,31,122,.4);letter-spacing:-.3px}
+  .cta:active{transform:translateY(2px)}
+  .foot{text-align:center;margin:18px 16px 0;font-size:11px;color:#a99cb8;font-weight:600}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="appbar">
+    <div class="top"><span>‹ 홈</span><span class="gear" onclick="openOnboard()">⚙️ 설정</span></div>
+    <h1><span class="logo">SRT</span> 표 사냥</h1>
+    <div class="sub">빈자리가 나면 대신 잡아드려요 🎯</div>
+  </div>
+
+  <!-- 출발 ↔ 도착 -->
+  <div class="card swapcard">
+    <div class="st departure" onclick="openSheet('dep')">
+      <div class="k">출발</div><div class="v" id="v-dep">오송</div>
+    </div>
+    <button class="swapbtn" onclick="swap()">⇄</button>
+    <div class="st arrival" onclick="openSheet('arr')">
+      <div class="k">도착</div><div class="v" id="v-arr">여수EXPO</div>
+    </div>
+  </div>
+
+  <!-- 즐겨찾기 경로 -->
+  <div class="favs">
+    <div class="favbar" id="favbar">
+      <div class="fav add" id="addFav" onclick="saveFav()">⭐ 현재 경로 저장</div>
+    </div>
+  </div>
+
+  <!-- 선택 행들 -->
+  <div class="rows">
+    <div class="row" data-key="date">
+      <div class="row-head" onclick="toggle('date')">
+        <div class="ic">📅</div><div class="k">날짜</div>
+        <div class="v" id="v-date">2026.05.23 (토)</div><div class="chev">▼</div>
+      </div>
+      <div class="row-body"><div class="row-inner">
+        <div class="datewrap">
+          <input type="date" id="date" onchange="setDate(this.value)" />
+          <button class="todaybtn" onclick="setToday()">오늘</button>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="row" data-key="time">
+      <div class="row-head" onclick="toggle('time')">
+        <div class="ic">⏰</div><div class="k">출발 시간대</div>
+        <div class="v" id="v-time">10:00 <span class="sep">~</span> 12:00</div><div class="chev">▼</div>
+      </div>
+      <div class="row-body"><div class="row-inner">
+        <div class="timebox">
+          <div class="trow">
+            <span class="lab">이 시각부터</span>
+            <div class="tsel"><select id="tfh" onchange="setTime()"></select></div><span class="tunit">시</span>
+            <div class="tsel"><select id="tfm" onchange="setTime()"></select></div><span class="tunit">분</span>
+          </div>
+          <div class="trow">
+            <span class="lab">이 시각까지</span>
+            <div class="tsel"><select id="tth" onchange="setTime()"></select></div><span class="tunit">시</span>
+            <div class="tsel"><select id="ttm" onchange="setTime()"></select></div><span class="tunit">분</span>
+          </div>
+        </div>
+        <div class="timehint">🕐 1분 단위로 정확히 지정할 수 있어요</div>
+      </div></div>
+    </div>
+
+    <div class="row" data-key="seat">
+      <div class="row-head" onclick="toggle('seat')">
+        <div class="ic">💺</div><div class="k">객실 타입</div>
+        <div class="v" id="v-seat">일반실 우선</div><div class="chev">▼</div>
+      </div>
+      <div class="row-body"><div class="row-inner">
+        <div class="seatgrid" id="seatgrid">
+          <div class="seat on" data-v="GENERAL_FIRST" onclick="pickSeat(this)"><div class="t">일반실 우선</div><div class="s">없으면 특실로</div></div>
+          <div class="seat" data-v="SPECIAL_FIRST" onclick="pickSeat(this)"><div class="t">특실 우선</div><div class="s">없으면 일반실로</div></div>
+          <div class="seat" data-v="GENERAL_ONLY" onclick="pickSeat(this)"><div class="t">일반실만</div><div class="s">특실 제외</div></div>
+          <div class="seat" data-v="SPECIAL_ONLY" onclick="pickSeat(this)"><div class="t">특실만</div><div class="s">일반실 제외</div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="row" data-key="psg">
+      <div class="row-head" onclick="toggle('psg')">
+        <div class="ic">🧑‍🤝‍🧑</div><div class="k">인원</div>
+        <div class="v" id="v-psg">성인 1명</div><div class="chev">▼</div>
+      </div>
+      <div class="row-body"><div class="row-inner">
+        <div class="psg"><div class="nm">성인 <small>만 13세 이상</small></div>
+          <div class="stp"><button onclick="step('adult',-1)">−</button><span class="val" id="adult">1</span><button onclick="step('adult',1)">＋</button></div></div>
+        <div class="psg"><div class="nm">어린이 <small>만 6~12세</small></div>
+          <div class="stp"><button onclick="step('child',-1)">−</button><span class="val" id="child">0</span><button onclick="step('child',1)">＋</button></div></div>
+        <div class="psg"><div class="nm">경로 <small>만 65세 이상</small></div>
+          <div class="stp"><button onclick="step('senior',-1)">−</button><span class="val" id="senior">0</span><button onclick="step('senior',1)">＋</button></div></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="optrow">
+    <div class="sw">
+      <div class="nm">표 잡으면 자동 결제 💳<small>등록한 카드로 바로 결제</small></div>
+      <label class="switch"><input type="checkbox" id="autopay" /><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <details>
+    <summary>🔔 텔레그램 알림 <span style="margin-left:auto;margin-right:10px;font-size:12px;color:#12b886" id="tgStatus"></span><span class="chev">▼</span></summary>
+    <div class="body">
+      <div class="field"><div class="lb">봇 토큰</div><input id="tgToken" placeholder="1234567890:AA..." /></div>
+      <div class="field"><div class="lb">채팅 ID</div><input id="tgChat" placeholder="8123679232" /></div>
+      <div class="hint">자리가 잡히면 여기로 알림이 옵니다. 웹앱을 꺼도 텔레그램 알림은 따로 와요.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔑 로그인 계정 <span style="margin-left:auto;margin-right:10px;font-size:12px;color:#12b886" id="srtStatus"></span><span class="chev">▼</span></summary>
+    <div class="body">
+      <div class="field"><div class="lb">아이디 (회원번호·이메일·전화번호)</div><input id="srtId" placeholder="01012345678" /></div>
+      <div class="field"><div class="lb">비밀번호</div><input id="srtPass" type="password" placeholder="••••••••" /></div>
+      <div class="hint">계정 정보는 서버(이 컴퓨터)에만 안전하게 저장돼요.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>💳 자동 결제 카드 <span style="margin-left:auto;margin-right:10px;font-size:12px;color:#12b886" id="cardStatus"></span><span class="chev">▼</span></summary>
+    <div class="body">
+      <div class="hint" style="margin-bottom:10px">위 <b>'표 잡으면 자동 결제'</b>를 켜면, 표가 잡히자마자 이 카드로 바로 결제해요.</div>
+      <div class="field"><div class="lb">카드번호 (- 없이)</div><input id="cardNum" inputmode="numeric" placeholder="0000000000000000" /></div>
+      <div class="field"><div class="lb">유효기간 (YYMM)</div><input id="cardExpire" inputmode="numeric" placeholder="2812" /></div>
+      <div class="field"><div class="lb">카드 비밀번호 앞 2자리</div><input id="cardPw" type="password" inputmode="numeric" placeholder="••" /></div>
+      <div class="field"><div class="lb">생년월일 6자리 (YYMMDD) / 사업자번호</div><input id="cardBirth" inputmode="numeric" placeholder="900101" /></div>
+      <div class="hint">카드 정보도 이 컴퓨터에만 안전하게 저장돼요.</div>
+    </div>
+  </details>
+
+  <div class="status" id="status">준비됐어요! 조건을 담고 아래 <b>버튼</b>을 눌러주세요 ✨</div>
+  <div class="foot" id="foot">※ 동작 예시(프로토타입) 화면이에요. 실제 예매는 되지 않아요.</div>
+
+
+  <div class="cta-wrap">
+    <button class="cta" id="cta" onclick="onCta()">🎯 표 사냥 시작</button>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheet-bar">
+      <button class="close" onclick="closeSheet()">✕</button>
+      <span id="sheet-title">출발역 선택</span>
+    </div>
+    <div class="sheet-search"><input id="sheet-search" placeholder="역 이름 검색 🔍" oninput="filterStations(this.value)" /></div>
+    <div class="stationlist" id="stationlist"></div>
+  </div>
+
+  <!-- 첫 설정(온보딩) 오버레이 -->
+  <div class="sheet" id="onboard">
+    <div class="sheet-bar">
+      <button class="close" onclick="closeOnboard()">✕</button>
+      <span>처음 설정 🎯</span>
+    </div>
+    <div class="ob-scroll">
+      <div class="ob-hero">
+        <div style="font-size:36px">🎯</div>
+        <h2>SRT 표 사냥꾼에 오신 걸 환영해요!</h2>
+        <p class="hint">원하는 표가 매진이어도, 빈자리가 나면 대신 잡아서 텔레그램으로 알려드려요.<br>시작 전에 아래 <b>2가지</b>만 설정하면 끝!</p>
+      </div>
+
+      <div class="ob-step">
+        <div class="ob-num">1</div>
+        <div class="ob-body">
+          <div class="ob-title">SRT 계정 로그인</div>
+          <div class="hint" style="margin-bottom:10px">평소 SRT 예매할 때 쓰는 계정이에요.</div>
+          <div class="field"><div class="lb">아이디 (회원번호·이메일·전화번호)</div><input id="ob-srtId" placeholder="01012345678" /></div>
+          <div class="field"><div class="lb">비밀번호</div><input id="ob-srtPass" type="password" placeholder="••••••••" /></div>
+        </div>
+      </div>
+
+      <div class="ob-step">
+        <div class="ob-num">2</div>
+        <div class="ob-body">
+          <div class="ob-title">텔레그램 알림 연결</div>
+          <div class="hint" style="margin-bottom:8px">표가 잡히면 여기로 알림이 와요. 순서대로 하면 돼요:</div>
+          <ol class="ob-howto">
+            <li>텔레그램에서 <b>@BotFather</b> 검색 → 대화 시작</li>
+            <li><b>/newbot</b> 입력 → 봇 이름 정하기 → 나오는 <b>토큰</b> 복사</li>
+            <li><b>@userinfobot</b> 검색 → 아무 메시지 → 나오는 <b>Id 숫자</b>가 채팅 ID</li>
+          </ol>
+          <div class="field"><div class="lb">봇 토큰</div><input id="ob-tgToken" placeholder="1234567890:AA..." /></div>
+          <div class="field"><div class="lb">채팅 ID</div><input id="ob-tgChat" placeholder="8123679232" /></div>
+        </div>
+      </div>
+
+      <div class="hint" style="margin:6px 4px 14px">💳 자동 결제 카드는 (선택) 나중에 앱 안 '표 잡으면 자동 결제'에서 등록할 수 있어요.</div>
+      <div id="ob-msg" class="hint" style="min-height:16px; margin:0 4px 10px"></div>
+      <button class="cta" style="position:static; box-shadow:none; margin:0" onclick="saveOnboard()">저장하고 시작하기 🎯</button>
+
+      <div style="margin-top:18px; padding-top:16px; border-top:2px solid var(--soft)">
+        <div class="ob-title" style="font-size:14px; margin-bottom:6px">📤 다른 사람에게 공유하기</div>
+        <div class="hint" style="margin-bottom:10px">아래 안내서를 받아서 이 <b>srtgo 폴더</b>와 함께 전달하면, 그 사람도 자기 컴퓨터에 설치해 쓸 수 있어요.</div>
+        <a href="/download/guide" download class="todaybtn" style="display:block; text-align:center; padding:14px; border-radius:14px; text-decoration:none">📄 설치 안내서 다운로드</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SRT_STATIONS = ["수서","동탄","평택지제","경주","곡성","공주","광주송정","구례구","김천(구미)","나주","남원","대전","동대구","마산","목포","밀양","부산","서대구","순천","여수EXPO","여천","오송","울산(통도사)","익산","전주","정읍","진영","진주","창원","창원중앙","천안아산","포항"];
+const DOW = ["일","월","화","수","목","금","토"];
+const sel = {dep:"오송", arr:"여수EXPO", tf:"10:00", tt:"12:00", seat:"GENERAL_FIRST"};
+const counts = {adult:1, child:0, senior:0};
+let sheetTarget = null;
+
+/* ── 역 선택 시트 ── */
+function openSheet(which){
+  sheetTarget = which;
+  document.getElementById("sheet-title").textContent = (which==="dep"?"출발역":"도착역")+" 선택";
+  document.getElementById("sheet-search").value="";
+  renderStations("");
+  document.getElementById("sheet").classList.add("show");
+}
+function closeSheet(){ document.getElementById("sheet").classList.remove("show"); }
+function renderStations(q){
+  const list=document.getElementById("stationlist"); list.innerHTML="";
+  SRT_STATIONS.filter(s=>s.includes(q)).forEach(s=>{
+    const el=document.createElement("div");
+    el.className="s"+(sel[sheetTarget]===s?" cur":"");
+    el.textContent=s;
+    el.onclick=()=>{ sel[sheetTarget]=s; document.getElementById("v-"+sheetTarget).textContent=s; closeSheet(); syncAddBtn(); };
+    list.appendChild(el);
+  });
+}
+function filterStations(q){ renderStations(q.trim()); }
+function swap(){
+  [sel.dep, sel.arr]=[sel.arr, sel.dep];
+  document.getElementById("v-dep").textContent=sel.dep;
+  document.getElementById("v-arr").textContent=sel.arr;
+  syncAddBtn();
+}
+
+/* ── 즐겨찾기 (localStorage 저장) ── */
+function loadFavs(){ try{ return JSON.parse(localStorage.getItem("srt_favs")||"[]"); }catch(e){ return []; } }
+function storeFavs(f){ localStorage.setItem("srt_favs", JSON.stringify(f)); }
+function favKey(a,b){ return a+"→"+b; }
+function renderFavs(){
+  const bar=document.getElementById("favbar");
+  bar.querySelectorAll(".fav:not(.add)").forEach(e=>e.remove());
+  const add=document.getElementById("addFav");
+  loadFavs().forEach(f=>{
+    const el=document.createElement("div"); el.className="fav";
+    el.innerHTML=`<span class="rt">${f.dep}<span class="a">→</span>${f.arr}</span><span class="del">✕</span>`;
+    el.querySelector(".rt").onclick=()=>applyFav(f);
+    el.querySelector(".del").onclick=(e)=>{ e.stopPropagation(); deleteFav(f); };
+    bar.insertBefore(el, add);
+  });
+  syncAddBtn();
+}
+function applyFav(f){
+  sel.dep=f.dep; sel.arr=f.arr;
+  document.getElementById("v-dep").textContent=f.dep;
+  document.getElementById("v-arr").textContent=f.arr;
+  syncAddBtn();
+}
+function saveFav(){
+  const favs=loadFavs();
+  if(favs.some(f=>favKey(f.dep,f.arr)===favKey(sel.dep,sel.arr))) return;
+  favs.push({dep:sel.dep, arr:sel.arr}); storeFavs(favs); renderFavs();
+}
+function deleteFav(f){
+  storeFavs(loadFavs().filter(x=>favKey(x.dep,x.arr)!==favKey(f.dep,f.arr))); renderFavs();
+}
+function syncAddBtn(){
+  const saved=loadFavs().some(f=>favKey(f.dep,f.arr)===favKey(sel.dep,sel.arr));
+  const add=document.getElementById("addFav");
+  add.classList.toggle("saved", saved);
+  add.textContent = saved ? "⭐ 저장된 경로" : "⭐ 현재 경로 저장";
+}
+
+/* ── 아코디언 ── */
+function toggle(key){
+  document.querySelectorAll(".row").forEach(it=>{
+    const open=it.dataset.key===key && !it.classList.contains("open");
+    it.classList.toggle("open",open);
+    const b=it.querySelector(".row-body");
+    b.style.maxHeight=open?b.scrollHeight+"px":"0";
+  });
+}
+function refreshOpen(){ const it=document.querySelector(".row.open"); if(it){const b=it.querySelector(".row-body");b.style.maxHeight=b.scrollHeight+"px";} }
+
+/* ── 시간대 (시/분 드롭다운, 1분 단위) ── */
+function buildTimeSelects(){
+  const fill=(id,n,def)=>{
+    const s=document.getElementById(id);
+    for(let i=0;i<n;i++){ const v=String(i).padStart(2,"0"); s.add(new Option(v,v)); }
+    s.value=def;
+  };
+  fill("tfh",24,"10"); fill("tfm",60,"00");
+  fill("tth",24,"12"); fill("ttm",60,"00");
+  setTime();
+}
+function setTime(){
+  sel.tf=document.getElementById("tfh").value+":"+document.getElementById("tfm").value;
+  sel.tt=document.getElementById("tth").value+":"+document.getElementById("ttm").value;
+  document.getElementById("v-time").innerHTML=`${sel.tf} <span class="sep">~</span> ${sel.tt}`;
+  refreshOpen();
+}
+
+/* ── 날짜 ── */
+function todayStr(){
+  const t=new Date();
+  return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+}
+function setDate(v){
+  if(!v) return;
+  const [y,m,d]=v.split("-");
+  const dow=DOW[new Date(v+"T00:00").getDay()];
+  const isToday = (v===todayStr());
+  document.getElementById("v-date").innerHTML=`${y}.${m}.${d} (${dow})` + (isToday?` <span style="color:var(--magenta)">· 오늘</span>`:"");
+  refreshOpen();
+}
+function setToday(){
+  const el=document.getElementById("date");
+  el.value=todayStr(); setDate(el.value);
+}
+function initDate(){
+  const el=document.getElementById("date");
+  const t=todayStr();
+  el.min=t;              // 오늘 이전 날짜는 선택 불가 (달력에서 오늘이 시작점=하이라이트)
+  el.value=t;            // 매번 열 때 당일 날짜 기준
+  setDate(t);
+}
+
+/* ── 객실타입 ── */
+function pickSeat(el){
+  document.querySelectorAll("#seatgrid .seat").forEach(s=>s.classList.remove("on"));
+  el.classList.add("on");
+  sel.seat=el.dataset.v;
+  document.getElementById("v-seat").textContent=el.querySelector(".t").textContent;
+  setTimeout(()=>toggle("seat"),120);
+}
+
+/* ── 인원 ── */
+function step(k,d){
+  counts[k]=Math.max(0,Math.min(9,counts[k]+d));
+  if(k==="adult") counts[k]=Math.max(1,counts[k]);
+  document.getElementById(k).textContent=counts[k];
+  const p=[];
+  if(counts.adult)p.push("성인 "+counts.adult+"명");
+  if(counts.child)p.push("어린이 "+counts.child+"명");
+  if(counts.senior)p.push("경로 "+counts.senior+"명");
+  document.getElementById("v-psg").textContent=p.join(", ")||"인원 선택";
+  refreshOpen();
+}
+
+/* ── 백엔드 연동 ── */
+const SERVED = location.protocol.startsWith("http");   // 서버로 열렸는지(file:// 이면 데모모드)
+let polling = null, isRunning = false, failCount = 0;
+
+function setStatus(html){ document.getElementById("status").innerHTML = html; }
+function hhmmss(hm){ return hm.replace(":","")+"00"; }        // "10:37" → "103700"
+function ymd(v){ return v.replaceAll("-",""); }              // "2026-05-23" → "20260523"
+
+async function saveConfig(){
+  const g=id=>{ const e=document.getElementById(id); return (e && e.value.trim()) ? e.value.trim() : null; };
+  const body = {
+    srt_id: g("srtId"), srt_pass: g("srtPass"),
+    tg_token: g("tgToken"), tg_chat_id: g("tgChat"),
+    card_number: g("cardNum"), card_expire: g("cardExpire"),
+    card_password: g("cardPw"), card_birthday: g("cardBirth"),
+  };
+  await fetch("/api/config", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+}
+
+function currentParams(){
+  return {
+    dep: sel.dep, arr: sel.arr,
+    date: ymd(document.getElementById("date").value),
+    time_from: hhmmss(sel.tf), time_to: hhmmss(sel.tt),
+    seat_type: sel.seat,
+    passengers: {adult:counts.adult, child:counts.child, senior:counts.senior},
+    auto_pay: document.getElementById("autopay").checked,
+  };
+}
+
+async function onCta(){
+  if(!SERVED){   // 파일로 그냥 열었을 때 = 데모
+    setStatus(`<span class="hi">${sel.dep} → ${sel.arr}</span> · ${sel.tf}~${sel.tt}<br>※ 서버(python server.py)로 열면 실제로 동작해요.`);
+    return;
+  }
+  if(isRunning){ await fetch("/api/stop",{method:"POST"}); return; }
+  setStatus("설정 저장 중...");
+  saveLast();                 // 마지막 예매한 출발/도착/시간/좌석/인원 기억
+  await saveConfig();
+  const res = await fetch("/api/start", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(currentParams())});
+  const j = await res.json();
+  if(!j.ok){ setStatus(`⚠️ ${j.error||"시작 실패"}`); return; }
+  startPolling();
+}
+
+function startPolling(){
+  if(polling) clearInterval(polling);
+  polling = setInterval(refreshStatus, 1000);
+  refreshStatus();
+}
+
+async function refreshStatus(){
+  try{
+    const s = await (await fetch("/api/status")).json();
+    isRunning = s.running;
+    const cta = document.getElementById("cta");
+    cta.textContent = s.running ? "■ 사냥 그만두기" : "🐾 표 사냥 시작";
+    cta.style.background = s.running ? "linear-gradient(120deg,#a99bb8,#7a6f8c)" : "";
+
+    const h=String(Math.floor(s.elapsed/3600)).padStart(2,"0");
+    const m=String(Math.floor(s.elapsed%3600/60)).padStart(2,"0");
+    const sec=String(s.elapsed%60).padStart(2,"0");
+    const logs = s.log||[];
+    const lastLog = logs[logs.length-1];
+    let head;
+    if(s.running){
+      head = `<span class="ok">🔎 빈자리 찾는 중</span> · ${s.attempts}회 · ${h}:${m}:${sec}`;
+    } else if(s.result){
+      head = `<span class="ok">🎉 표 잡았어요!</span>`;
+    } else if(lastLog && lastLog.level==="error"){
+      head = `<span class="hi">⚠️ 앗, 문제가 생겨 멈췄어요</span> — 텔레그램에도 알림을 보냈어요`;
+    } else {
+      head = `대기 중 💤`;
+    }
+
+    const last = logs.slice(-6).map(l=>{
+      const c = l.level==="ok"?"ok":(l.level==="error"||l.level==="warn"?"hi":"");
+      return `<span class="${c}">${l.t}</span> ${l.msg}`;
+    }).join("<br>");
+    setStatus(head + "<br>" + last);
+
+    failCount=0;
+    // 연결 감시를 위해 유휴 상태에서도 폴링은 계속 유지 (끊기면 바로 감지)
+  }catch(e){
+    failCount++;
+    if(failCount>=2){
+      setStatus(`<span class="hi">🔌 서버(컴퓨터) 연결 끊김</span><br>컴퓨터가 꺼졌거나 인터넷이 끊겼을 수 있어요. Tailscale이 켜져 있는지, 컴퓨터가 켜져 있는지 확인하세요.`);
+      const cta=document.getElementById("cta");
+      cta.textContent="🔌 서버 연결 안 됨";
+      cta.style.background="linear-gradient(120deg,#b3187f,#7a2593)";
+    }
+  }
+}
+
+/* ── 마지막 예매 조건 기억 ── */
+function saveLast(){
+  try{
+    localStorage.setItem("srt_last", JSON.stringify({
+      dep:sel.dep, arr:sel.arr, tf:sel.tf, tt:sel.tt, seat:sel.seat,
+      adult:counts.adult, child:counts.child, senior:counts.senior
+    }));
+  }catch(e){}
+}
+function restoreLast(){
+  let d; try{ d=JSON.parse(localStorage.getItem("srt_last")||"null"); }catch(e){ d=null; }
+  if(!d) return;
+  // 출발/도착
+  if(d.dep){ sel.dep=d.dep; document.getElementById("v-dep").textContent=d.dep; }
+  if(d.arr){ sel.arr=d.arr; document.getElementById("v-arr").textContent=d.arr; }
+  syncAddBtn();
+  // 시간
+  if(d.tf){ document.getElementById("tfh").value=d.tf.slice(0,2); document.getElementById("tfm").value=d.tf.slice(3,5); }
+  if(d.tt){ document.getElementById("tth").value=d.tt.slice(0,2); document.getElementById("ttm").value=d.tt.slice(3,5); }
+  setTime();
+  // 좌석
+  if(d.seat){ sel.seat=d.seat;
+    document.querySelectorAll("#seatgrid .seat").forEach(s=>s.classList.toggle("on", s.dataset.v===d.seat));
+    const on=document.querySelector("#seatgrid .seat.on");
+    if(on) document.getElementById("v-seat").textContent=on.querySelector(".t").textContent;
+  }
+  // 인원
+  ["adult","child","senior"].forEach(k=>{ if(typeof d[k]==="number"){ counts[k]=d[k]; document.getElementById(k).textContent=d[k]; }});
+  const p=[]; if(counts.adult)p.push("성인 "+counts.adult+"명"); if(counts.child)p.push("어린이 "+counts.child+"명"); if(counts.senior)p.push("경로 "+counts.senior+"명");
+  document.getElementById("v-psg").textContent=p.join(", ")||"인원 선택";
+}
+
+/* ── 첫 설정(온보딩) ── */
+function openOnboard(){ document.getElementById("onboard").classList.add("show"); }
+function closeOnboard(){ document.getElementById("onboard").classList.remove("show"); }
+function _v(id){ const e=document.getElementById(id); return (e && e.value.trim()) ? e.value.trim() : null; }
+async function saveOnboard(){
+  const msg=document.getElementById("ob-msg");
+  if(!SERVED){ msg.style.color="#b3187f"; msg.textContent="⚠️ 서버(http://…:8000)로 접속해야 저장돼요."; return; }
+  const b={ srt_id:_v("ob-srtId"), srt_pass:_v("ob-srtPass"), tg_token:_v("ob-tgToken"), tg_chat_id:_v("ob-tgChat") };
+  const st = await (await fetch("/api/config/status")).json();
+  const needSrt = !st.srt && (!b.srt_id || !b.srt_pass);
+  const needTg  = !st.telegram && (!b.tg_token || !b.tg_chat_id);
+  if(needSrt || needTg){ msg.style.color="#b3187f"; msg.textContent="⚠️ SRT 계정과 텔레그램 정보를 모두 입력해주세요."; return; }
+  msg.style.color="#12b886"; msg.textContent="저장 중...";
+  await fetch("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});
+  await loadConfigStatus();
+  msg.textContent="✅ 저장 완료!";
+  setTimeout(closeOnboard, 500);
+}
+
+function updateFooter(){
+  const f=document.getElementById("foot");
+  if(!f) return;
+  if(SERVED){
+    f.innerHTML='🔴 <b style="color:#b3187f">실제로 표를 잡습니다.</b> [표 사냥 시작]을 누르면 조건에 맞는 표를 실제로 예매해요.';
+  }else{
+    f.textContent='※ 지금은 파일로 연 미리보기예요. 실제 표 사냥은 서버(http://…:8000)로 접속해야 됩니다.';
+  }
+}
+
+async function loadConfigStatus(){
+  if(!SERVED) return;
+  try{
+    const c = await (await fetch("/api/config/status")).json();
+    const tg=document.getElementById("tgStatus"), sr=document.getElementById("srtStatus");
+    if(tg) tg.textContent = c.telegram ? "저장됨 ✅" : "미설정";
+    if(sr) sr.textContent = c.srt ? "저장됨 ✅" : "미설정";
+    if(tg && !c.telegram) tg.style.color="#b3187f";
+    if(sr && !c.srt) sr.style.color="#b3187f";
+    // 저장돼 있으면 입력칸에 안내 placeholder
+    if(c.telegram){ const a=document.getElementById("tgToken"),b=document.getElementById("tgChat");
+      if(a)a.placeholder="저장됨 (바꿀 때만 입력)"; if(b)b.placeholder="저장됨 (바꿀 때만 입력)"; }
+    if(c.srt){ const a=document.getElementById("srtId"),b=document.getElementById("srtPass");
+      if(a)a.placeholder="저장됨 (바꿀 때만 입력)"; if(b)b.placeholder="저장됨 (바꿀 때만 입력)"; }
+    const cs=document.getElementById("cardStatus");
+    if(cs){ cs.textContent = c.card ? "저장됨 ✅" : "미설정"; if(!c.card) cs.style.color="#b3187f"; }
+    if(c.card){ ["cardNum","cardExpire","cardPw","cardBirth"].forEach(id=>{ const e=document.getElementById(id); if(e) e.placeholder="저장됨 (바꿀 때만 입력)"; }); }
+    // 처음 쓰는 사람(계정·텔레그램 미설정)이면 첫 설정 화면 자동 표시
+    if(!c.srt || !c.telegram){ openOnboard(); }
+  }catch(e){}
+}
+
+buildTimeSelects();
+initDate();
+restoreLast();      // 마지막 예매한 출발/도착/시간/좌석/인원 복원 (날짜는 오늘 기준 유지)
+renderFavs();
+updateFooter();
+if(SERVED){ loadConfigStatus(); startPolling(); }   // 서버로 열렸으면 설정상태 표시 + 상태 폴링
+</script>
+</body>
+</html>

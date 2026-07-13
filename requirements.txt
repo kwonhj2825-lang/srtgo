@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+click
+curl_cffi
+requests
+inquirer>=3.4
+keyring
+PyCryptodome
+prompt_toolkit>=3
+python-telegram-bot
+termcolor
